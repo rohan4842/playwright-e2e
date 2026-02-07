@@ -36,6 +36,8 @@ export class SearchProductsPage {
      */
     async clickOnProductsButton() {
         await this.productsLink.click();
+        await this.page.waitForLoadState('domcontentloaded');
+        await this.searchInput.waitFor({ state: 'visible', timeout: 10000 });
     }
 
     /**
@@ -54,7 +56,7 @@ export class SearchProductsPage {
         await this.searchInput.fill(productName);
         await this.searchButton.click();
         // Wait for the search results to load
-        await this.page.waitForLoadState('networkidle');
+        await this.page.waitForLoadState('domcontentloaded');
     }
 
     /**
