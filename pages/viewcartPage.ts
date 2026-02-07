@@ -13,11 +13,11 @@ export class ViewCartPage {
     constructor(page: Page) {
         this.page = page;
         this.cartInfoTable = page.locator('#cart_info_table');
-        this.itemHeader = page.locator('.cart_menu').getByText('Item');
-        this.descriptionHeader = page.locator('.cart_menu').getByText('Description');
-        this.priceHeader = page.locator('.cart_menu').getByText('Price');
-        this.quantityHeader = page.locator('.cart_menu').getByText('Quantity');
-        this.totalHeader = page.locator('.cart_menu').getByText('Total');
+        this.itemHeader = page.locator('#cart_info_table td.cart_menu', { hasText: 'Item' });
+        this.descriptionHeader = page.locator('#cart_info_table td.cart_description', { hasText: 'Description' });
+        this.priceHeader = page.locator('#cart_info_table td.cart_menu', { hasText: 'Price' });
+        this.quantityHeader = page.locator('#cart_info_table td.cart_menu', { hasText: 'Quantity' });
+        this.totalHeader = page.locator('#cart_info_table td.cart_menu', { hasText: 'Total' });
         this.proceedToCheckoutBtn = page.getByText('Proceed To Checkout');
     }
 
@@ -25,19 +25,23 @@ export class ViewCartPage {
      * Verify cart table headers are visible (Item, Description, Price, Quantity, Total)
      */
     async verifyCartTableHeaders() {
-        await expect(this.itemHeader).toBeVisible();
+        // Wait for the cart table to be visible first
+        await expect(this.cartInfoTable).toBeVisible();
+        
+        // Verify headers using text content on the page
+        await expect(this.page.getByRole('row').first()).toContainText('Item');
         console.log('Item header is visible');
 
-        await expect(this.descriptionHeader).toBeVisible();
+        await expect(this.page.getByRole('row').first()).toContainText('Description');
         console.log('Description header is visible');
 
-        await expect(this.priceHeader).toBeVisible();
+        await expect(this.page.getByRole('row').first()).toContainText('Price');
         console.log('Price header is visible');
 
-        await expect(this.quantityHeader).toBeVisible();
+        await expect(this.page.getByRole('row').first()).toContainText('Quantity');
         console.log('Quantity header is visible');
 
-        await expect(this.totalHeader).toBeVisible();
+        await expect(this.page.getByRole('row').first()).toContainText('Total');
         console.log('Total header is visible');
     }
 

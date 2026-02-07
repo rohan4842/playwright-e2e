@@ -12,5 +12,8 @@ export const paymentExpectedTexts = {
     cardNumber: 'Card Number',
     cvc: 'CVC',
     expiration: 'Expiration',
-    payAndConfirmOrder: 'Pay and Confirm Order'
+    payAndConfirmOrder: 'Pay and Confirm Order',
+    orderPlacedSuccessfully: 'Your order has been placed successfully!',
+    orderPlaced: 'Order Placed!',
+    congratulationsMessage: 'Congratulations! Your order has been confirmed!'
 };
