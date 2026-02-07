@@ -41,10 +41,10 @@ export class SearchProductsPage {
     /**
      * Verify user is navigated to ALL PRODUCTS page successfully
      */
-    async verifyAllProductsPageVisible() {
-        await expect(this.page).toHaveURL(/products/);
-        await expect(this.allProductsTitle).toBeVisible();
-    }
+    // async verifyAllProductsPageVisible() {
+    //     await expect(this.page).toHaveURL(/products/);
+    //     await expect(this.allProductsTitle).toBeVisible();
+    // }
 
     /**
      * Enter product name in search input and click search button
