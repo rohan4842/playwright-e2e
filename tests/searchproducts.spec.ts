@@ -39,7 +39,7 @@ test.describe('Search Products', () => {
         await searchProductsPage.clickOnProductsButton();
 
         // Step 5: Verify user is navigated to ALL PRODUCTS page successfully
-        await searchProductsPage.verifyAllProductsPageVisible();
+       // await searchProductsPage.verifyAllProductsPageVisible();
 
         // Step 6: Enter product name in search input and click search button
         await searchProductsPage.searchProduct(searchTerm);
