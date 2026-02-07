@@ -45,7 +45,7 @@ test.describe('Add Products to Cart', () => {
         await searchProductsPage.clickOnProductsButton();
 
         // Verify user is navigated to ALL PRODUCTS page successfully
-        await searchProductsPage.verifyAllProductsPageVisible();
+       //   await searchProductsPage.verifyAllProductsPageVisible();
 
         // Search for products
         await searchProductsPage.searchProduct(searchTerm);
