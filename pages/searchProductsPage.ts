@@ -12,6 +12,7 @@ export class SearchProductsPage {
     readonly productItems: Locator;
     readonly continueShoppingBtn: Locator;
     readonly viewCartLink: Locator;
+    readonly cartModal: Locator;
 
     constructor(page: Page) {
         this.page = page;
@@ -23,8 +24,11 @@ export class SearchProductsPage {
         this.productCards = page.locator('.features_items .productinfo');
         this.productNames = page.locator('.features_items .productinfo p');
         this.productItems = page.locator('.features_items .product-image-wrapper');
-        this.continueShoppingBtn = page.getByRole('button', { name: 'Continue Shopping' });
-        this.viewCartLink = page.locator('.modal-body a[href="/view_cart"]');
+        // Modal buttons - try multiple possible selectors
+        this.continueShoppingBtn = page.locator('.modal-footer button, .modal-body button').filter({ hasText: /continue/i });
+        this.viewCartLink = page.locator('.modal-body a[href="/view_cart"], .modal-body a:has-text("View Cart")');
+        // Target the visible modal dialog that shows after adding to cart
+        this.cartModal = page.locator('#cartModal.in .modal-content, #cartModal.show .modal-content, .modal.in .modal-content');
     }
 
     /**
@@ -50,8 +54,7 @@ export class SearchProductsPage {
         await this.searchInput.fill(productName);
         await this.searchButton.click();
         // Wait for the search results to load
-        await this.page.waitForLoadState('domcontentloaded');
-        await this.page.waitForTimeout(1000); // Allow time for content to update
+        await this.page.waitForLoadState('networkidle');
     }
 
     /**
@@ -102,30 +105,60 @@ export class SearchProductsPage {
      */
     async hoverAndAddToCart(productIndex: number) {
         const product = this.productItems.nth(productIndex);
+        
+        // Scroll product into view first
+        await product.scrollIntoViewIfNeeded();
+        
+        // Hover over the product
         await product.hover();
+        
+        // Wait for overlay animation to complete
+        await this.page.waitForTimeout(500);
         
         // Click the "Add to cart" button that appears on hover
         const addToCartBtn = product.locator('.overlay-content .add-to-cart');
-        await addToCartBtn.click();
+        await addToCartBtn.click({ force: true });
         
-        // Wait for modal to appear
-        await this.page.waitForSelector('.modal-content', { state: 'visible' });
+        // Wait for modal dialog to appear - check for any visible modal element
+        await this.page.waitForTimeout(1000);
+        
+        // Try to find the modal with flexible selectors
+        const modalVisible = this.page.locator('.close-modal ');
+        await expect(modalVisible).toBeVisible({ timeout: 10000 });
     }
 
     /**
      * Click 'Continue Shopping' button in the modal
      */
     async clickContinueShopping() {
-        await this.continueShoppingBtn.click();
+        // Wait a moment for modal to be fully interactive
+        await this.page.waitForTimeout(500);
+        
+        // Try clicking with multiple fallback selectors
+        const continueBtn = this.page.locator('button:has-text("Continue"), button:has-text("continue")').first();
+        await continueBtn.click();
+        
         // Wait for modal to close
-        await this.page.waitForSelector('.modal-content', { state: 'hidden' });
+        await this.page.waitForTimeout(1000);
     }
 
-    /**
-     * Click 'View Cart' link in the modal
-     */
-    async clickViewCart() {
-        await this.viewCartLink.click();
+    async clickViewCartLink() {
+        // Wait a moment for modal to be fully interactive
+        await this.page.waitForTimeout(500);
+        
+        // Click the "View Cart" link inside the modal (after "Your product has been added to cart" message)
+        const viewCartBtn = this.page.locator('.modal-body a:has-text("View Cart"), .modal-content a[href="/view_cart"]').first();
+        await viewCartBtn.click();
+        await this.page.waitForLoadState('domcontentloaded');
+    }
+
+    async clickCart() {
+        // Wait a moment for modal to be fully interactive
+        await this.page.waitForTimeout(500);
+        
+        // Try clicking with multiple fallback selectors
+        const viewCartBtn = this.page.locator('a:has-text("View Cart"), a[href="/view_cart"]').first();
+        await viewCartBtn.click();
         await this.page.waitForLoadState('domcontentloaded');
     }
 

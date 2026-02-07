@@ -9,6 +9,7 @@ export class CartPage {
     readonly cartProductQuantities: Locator;
     readonly cartProductTotals: Locator;
     readonly emptyCartMessage: Locator;
+    readonly deleteButtons: Locator;
 
     constructor(page: Page) {
         this.page = page;
@@ -19,6 +20,36 @@ export class CartPage {
         this.cartProductQuantities = page.locator('#cart_info_table tbody tr .cart_quantity button');
         this.cartProductTotals = page.locator('#cart_info_table tbody tr .cart_total p');
         this.emptyCartMessage = page.locator('#empty_cart');
+        this.deleteButtons = page.locator('.cart_quantity_delete');
+    }
+
+    /**
+     * Clear all products from cart via UI
+     * Note: No API endpoint available for cart operations
+     */
+    async clearCart() {
+        // Navigate to cart page
+        await this.page.goto('/view_cart');
+        await this.page.waitForLoadState('domcontentloaded');
+
+        // Check if cart has items
+        const productCount = await this.cartProducts.count();
+        
+        if (productCount === 0) {
+            console.log('Cart is already empty');
+            return;
+        }
+
+        console.log(`Clearing ${productCount} products from cart...`);
+
+        // Delete all products one by one (always click first delete button as items shift up)
+        for (let i = 0; i < productCount; i++) {
+            await this.deleteButtons.first().click();
+            // Wait for item to be removed
+            await this.page.waitForLoadState('domcontentloaded');
+        }
+
+        console.log('Cart cleared successfully');
     }
 
     /**

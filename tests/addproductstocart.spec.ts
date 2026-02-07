@@ -38,6 +38,9 @@ test.describe('Add Products to Cart', () => {
     test('Add products to cart and verify', async ({ page }) => {
         const searchTerm = 'Top';
 
+        // Step 1: Clear cart before adding new products (via UI - no API available)
+        await cartPage.clearCart();
+
         // Step 4: Click on 'Products' button
         await searchProductsPage.clickOnProductsButton();
 
@@ -66,8 +69,8 @@ test.describe('Add Products to Cart', () => {
         // Step 7: Hover over second product and click 'Add to cart'
         await searchProductsPage.hoverAndAddToCart(1);
 
-        // Step 8: Click 'View Cart' button
-        await searchProductsPage.clickViewCart();
+        // Step 8: Click 'View Cart' link in modal to navigate to cart page
+        await searchProductsPage.clickViewCartLink();
 
         // Step 9: Verify both products are added to Cart
         await cartPage.verifyCartPageVisible();
