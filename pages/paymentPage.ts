@@ -1,5 +1,7 @@
 import { Page, Locator, expect } from '@playwright/test';
 import { paymentConfig, paymentExpectedTexts } from '../configs/payment.config';
+import * as path from 'path';
+import * as fs from 'fs';
 
 export class PaymentPage {
     readonly page: Page;
@@ -17,6 +19,11 @@ export class PaymentPage {
     readonly cvcInput: Locator;
     readonly expirationMonthInput: Locator;
     readonly expirationYearInput: Locator;
+    readonly orderSuccessMessage: Locator;
+    readonly orderPlacedHeading: Locator;
+    readonly congratulationsMessage: Locator;
+    readonly downloadInvoiceButton: Locator;
+    readonly continueButton: Locator;
 
     constructor(page: Page) {
         this.page = page;
@@ -34,6 +41,11 @@ export class PaymentPage {
         this.cvcInput = page.locator('input[name="cvc"]');
         this.expirationMonthInput = page.locator('input[name="expiry_month"]');
         this.expirationYearInput = page.locator('input[name="expiry_year"]');
+        this.orderSuccessMessage = page.getByText('Your order has been placed successfully!');
+        this.orderPlacedHeading = page.getByText('Order Placed!');
+        this.congratulationsMessage = page.getByText('Congratulations! Your order has been confirmed!');
+        this.downloadInvoiceButton = page.getByRole('link', { name: 'Download Invoice' });
+        this.continueButton = page.getByRole('link', { name: 'Continue' });
     }
 
     async login(email: string, password: string) {
@@ -97,5 +109,51 @@ export class PaymentPage {
 
     async clickPayAndConfirmOrder() {
         await this.payAndConfirmButton.click();
+    }
+
+    async verifyOrderPlacedSuccessfully() {
+        await expect(this.orderSuccessMessage).toBeVisible();
+        console.log('Order placed successfully message is visible');
+    }
+
+    async verifyOrderPlacedHeading() {
+        await expect(this.orderPlacedHeading).toBeVisible();
+        console.log('Order Placed! heading is visible');
+    }
+
+    async verifyCongratulationsMessage() {
+        await expect(this.congratulationsMessage).toBeVisible();
+        console.log('Congratulations message is visible');
+    }
+
+    async verifyOrderConfirmation() {
+        await this.verifyOrderPlacedHeading();
+        await this.verifyCongratulationsMessage();
+    }
+
+    async downloadInvoice(): Promise<string> {
+        // Create downloads folder if it doesn't exist
+        const downloadsFolder = path.join(process.cwd(), 'downloads');
+        if (!fs.existsSync(downloadsFolder)) {
+            fs.mkdirSync(downloadsFolder, { recursive: true });
+        }
+
+        // Wait for the download to start when clicking the button
+        const downloadPromise = this.page.waitForEvent('download');
+        await this.downloadInvoiceButton.click();
+        const download = await downloadPromise;
+
+        // Save the file to the downloads folder
+        const fileName = download.suggestedFilename();
+        const filePath = path.join(downloadsFolder, fileName);
+        await download.saveAs(filePath);
+
+        console.log(`Invoice downloaded successfully to: ${filePath}`);
+        return filePath;
+    }
+
+    async clickContinue() {
+        await this.continueButton.click();
+        console.log('Clicked on Continue button');
     }
 }

@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { PaymentPage } from '../pages/paymentPage';
+import * as fs from 'fs';
 
 test.describe('Payment Page Tests', () => {
     let paymentPage: PaymentPage;
@@ -26,5 +27,21 @@ test.describe('Payment Page Tests', () => {
         
         // Click on Pay and Confirm Order
         await paymentPage.clickPayAndConfirmOrder();
+        
+        // Verify "Order Placed!" heading
+        await paymentPage.verifyOrderPlacedHeading();
+        
+        // Verify "Congratulations! Your order has been confirmed!" message
+        await paymentPage.verifyCongratulationsMessage();
+        
+        // Click on Download Invoice and save to downloads folder
+        const invoicePath = await paymentPage.downloadInvoice();
+        
+        // Verify the file was downloaded
+        expect(fs.existsSync(invoicePath)).toBeTruthy();
+        console.log(`Invoice file verified at: ${invoicePath}`);
+        
+        // Click on Continue button
+        await paymentPage.clickContinue();
     });
 });
