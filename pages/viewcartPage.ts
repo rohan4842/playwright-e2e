@@ -13,11 +13,11 @@ export class ViewCartPage {
     constructor(page: Page) {
         this.page = page;
         this.cartInfoTable = page.locator('#cart_info_table');
-        this.itemHeader = page.locator('#cart_info_table thead tr td').filter({ hasText: 'Item' });
-        this.descriptionHeader = page.locator('#cart_info_table thead tr td').filter({ hasText: 'Description' });
-        this.priceHeader = page.locator('#cart_info_table thead tr td').filter({ hasText: 'Price' });
-        this.quantityHeader = page.locator('#cart_info_table thead tr td').filter({ hasText: 'Quantity' });
-        this.totalHeader = page.locator('#cart_info_table thead tr td').filter({ hasText: 'Total' });
+        this.itemHeader = page.locator('.cart_menu').getByText('Item');
+        this.descriptionHeader = page.locator('.cart_menu').getByText('Description');
+        this.priceHeader = page.locator('.cart_menu').getByText('Price');
+        this.quantityHeader = page.locator('.cart_menu').getByText('Quantity');
+        this.totalHeader = page.locator('.cart_menu').getByText('Total');
         this.proceedToCheckoutBtn = page.getByText('Proceed To Checkout');
     }
 
