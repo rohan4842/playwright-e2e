@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { CheckoutPage } from '../pages/checkoutPage';
+import { loginViaUI } from '../utils/loginHelper';
 
 test.describe('Checkout Page Tests', () => {
     let checkoutPage: CheckoutPage;
@@ -9,8 +10,8 @@ test.describe('Checkout Page Tests', () => {
     });
 
     test('Verify checkout page address details and place order', async ({ page }) => {
-        // Login first
-        await checkoutPage.login(process.env.USERNAME!, process.env.PASSWORD!);
+        // Login using centralized helper
+        await loginViaUI(page);
         
         // Navigate to checkout page
         await checkoutPage.navigateToCheckout();

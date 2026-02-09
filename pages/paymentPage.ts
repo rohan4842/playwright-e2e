@@ -1,13 +1,11 @@
 import { Page, Locator, expect } from '@playwright/test';
 import { paymentConfig, paymentExpectedTexts } from '../configs/payment.config';
+import { loginViaUI } from '../utils/loginHelper';
 import * as path from 'path';
 import * as fs from 'fs';
 
 export class PaymentPage {
     readonly page: Page;
-    readonly loginEmailInput: Locator;
-    readonly loginPasswordInput: Locator;
-    readonly loginButton: Locator;
     readonly paymentHeading: Locator;
     readonly nameOnCardLabel: Locator;
     readonly cardNumberLabel: Locator;
@@ -27,9 +25,6 @@ export class PaymentPage {
 
     constructor(page: Page) {
         this.page = page;
-        this.loginEmailInput = page.locator('form').filter({ hasText: 'Login' }).getByPlaceholder('Email Address');
-        this.loginPasswordInput = page.getByPlaceholder('Password');
-        this.loginButton = page.getByRole('button', { name: 'Login' });
         this.paymentHeading = page.locator('.heading').filter({ hasText: 'Payment' });
         this.nameOnCardLabel = page.locator('label').filter({ hasText: 'Name on Card' });
         this.cardNumberLabel = page.locator('label').filter({ hasText: 'Card Number' });
@@ -48,11 +43,11 @@ export class PaymentPage {
         this.continueButton = page.getByRole('link', { name: 'Continue' });
     }
 
+    /**
+     * @deprecated Use loginViaUI from utils/loginHelper.ts instead
+     */
     async login(email: string, password: string) {
-        await this.page.goto('/login');
-        await this.loginEmailInput.fill(email);
-        await this.loginPasswordInput.fill(password);
-        await this.loginButton.click();
+        await loginViaUI(this.page, { username: email, password });
     }
 
     async navigateToPayment() {

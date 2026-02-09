@@ -1,33 +1,13 @@
 import { test, expect } from '@playwright/test';
 import { SearchProductsPage } from '../pages/searchProductsPage';
+import { loginWithApiVerification } from '../utils/loginHelper';
 
 test.describe('Search Products', () => {
     let searchProductsPage: SearchProductsPage;
 
     test.beforeEach(async ({ page }) => {
-        const username = process.env.USERNAME!;
-        const password = process.env.PASSWORD!;
-        const userDisplayName = process.env.USER_DISPLAY_NAME!;
-
-        // Login via API to verify credentials are valid
-        const apiResponse = await page.request.post('https://automationexercise.com/api/verifyLogin', {
-            form: {
-                email: username,
-                password: password
-            }
-        });
-
-        const responseBody = await apiResponse.json();
-        expect(responseBody.responseCode).toBe(200);
-
-        // Perform UI login once (API doesn't set session cookies)
-        await page.goto('/login');
-        await page.locator('form').filter({ hasText: 'Login' }).getByPlaceholder('Email Address').fill(username);
-        await page.getByPlaceholder('Password').fill(password);
-        await page.getByRole('button', { name: 'Login' }).click();
-
-        // Verify user is logged in
-        await expect(page.getByText(` Logged in as ${userDisplayName}`)).toBeVisible();
+        // Login using centralized helper
+        await loginWithApiVerification(page);
 
         searchProductsPage = new SearchProductsPage(page);
     });
