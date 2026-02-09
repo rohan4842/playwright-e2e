@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { PaymentPage } from '../pages/paymentPage';
+import { loginViaUI } from '../utils/loginHelper';
 import * as fs from 'fs';
 
 test.describe('Payment Page Tests', () => {
@@ -10,8 +11,8 @@ test.describe('Payment Page Tests', () => {
     });
 
     test('Verify payment page labels and complete payment', async ({ page }) => {
-        // Login first
-        await paymentPage.login(process.env.USERNAME!, process.env.PASSWORD!);
+        // Login using centralized helper
+        await loginViaUI(page);
         
         // Navigate to payment page
         await paymentPage.navigateToPayment();

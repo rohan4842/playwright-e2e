@@ -1,11 +1,9 @@
 import { Page, Locator, expect } from '@playwright/test';
 import { addressConfig, expectedTexts } from '../configs/address.config';
+import { loginViaUI } from '../utils/loginHelper';
 
 export class CheckoutPage {
     readonly page: Page;
-    readonly loginEmailInput: Locator;
-    readonly loginPasswordInput: Locator;
-    readonly loginButton: Locator;
     readonly addressDetailsHeading: Locator;
     readonly deliveryAddressHeading: Locator;
     readonly billingAddressHeading: Locator;
@@ -17,9 +15,6 @@ export class CheckoutPage {
 
     constructor(page: Page) {
         this.page = page;
-        this.loginEmailInput = page.locator('form').filter({ hasText: 'Login' }).getByPlaceholder('Email Address');
-        this.loginPasswordInput = page.getByPlaceholder('Password');
-        this.loginButton = page.getByRole('button', { name: 'Login' });
         this.addressDetailsHeading = page.locator('h2').filter({ hasText: 'Address Details' });
         this.deliveryAddressHeading = page.locator('h3').filter({ hasText: 'Your delivery address' });
         this.billingAddressHeading = page.locator('h3').filter({ hasText: 'Your billing address' });
@@ -35,11 +30,11 @@ export class CheckoutPage {
         await this.page.goto(checkoutUrl);
     }
 
+    /**
+     * @deprecated Use loginViaUI from utils/loginHelper.ts instead
+     */
     async login(email: string, password: string) {
-        await this.page.goto('/login');
-        await this.loginEmailInput.fill(email);
-        await this.loginPasswordInput.fill(password);
-        await this.loginButton.click();
+        await loginViaUI(this.page, { username: email, password });
     }
 
     async verifyAddressDetailsText() {
